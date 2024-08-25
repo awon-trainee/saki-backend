@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      # Log in to Amazon ECR
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 160998163510.dkr.ecr.eu-west-2.amazonaws.com
+      - aws s3 cp s3://awon-env/saki/saki.staging .env
+
+
+  build:
+    commands:
+      # Build Docker image
+      - echo "Building Docker image..."
+      - docker build -t saki-app-be-stg:latest .
+      - docker tag saki-app-be-stg:latest 160998163510.dkr.ecr.eu-west-2.amazonaws.com/saki-app-be-stg:$CODEBUILD_BUILD_NUMBER
+
+
+  post_build:
+    commands:
+      # Push Docker image to ECR
+      - echo "Pushing Docker image to ECR..."
+      - docker push 160998163510.dkr.ecr.eu-west-2.amazonaws.com/saki-app-be-stg:$CODEBUILD_BUILD_NUMBER
+      - printf '{"AWSEBDockerrunVersion":"1","Image":{"Name":"%s","Update":"true"},"Ports":[{"ContainerPort":80,"HostPort":80}]}' 160998163510.dkr.ecr.eu-west-2.amazonaws.com/saki-app-be-stg:$CODEBUILD_BUILD_NUMBER > Dockerrun.aws.json
+      - cat Dockerrun.aws.json
+artifacts:
+  files: Dockerrun.aws.json
