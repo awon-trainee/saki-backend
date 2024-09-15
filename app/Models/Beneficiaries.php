@@ -23,6 +23,7 @@ class Beneficiaries extends Authenticatable
 
     protected static function boot()
     {
+
         parent::boot();
 
         if (backpack_auth()->check()) {

@@ -23,7 +23,7 @@ class LoginController extends Controller
     {
         $this->smsService = new SmsService();
     }
-
+    
     public function login(LoginRequest $loginRequest)
     {
         $beneficiaries = $this->fetchUserByPhone($loginRequest->input('phone'));
@@ -31,6 +31,7 @@ class LoginController extends Controller
 
         return $this->apiResponse(trans('api/auth.send_message_login'), false, Response::HTTP_OK);
     }
+    
 
     public function validateOTP(SmsRequest $smsRequest)
     {
@@ -67,12 +68,10 @@ class LoginController extends Controller
         return true;
     }
 
-
     private function fetchUserByPhone($phone)
     {
         return Beneficiaries::query()->where('phone', $phone)->firstOrFail();
     }
-
 
     private function revokeToken(Beneficiaries $beneficiaries)
     {
@@ -87,4 +86,5 @@ class LoginController extends Controller
             ]);
         }
     }
+
 }

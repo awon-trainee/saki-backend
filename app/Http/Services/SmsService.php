@@ -6,6 +6,7 @@ use App\Models\Beneficiaries;
 use App\Models\Sms;
 use App\Models\User;
 
+
 class SmsService
 {
     private $apiUrl = 'https://el.cloud.unifonic.com/rest/SMS/messages';
@@ -13,14 +14,15 @@ class SmsService
     private $appSid;
 
 
-    /*
-     * Initialize the connection with SMS
-     * */
+    
+    //Initialize the connection with SMS
+    
     public function __construct()
     {
         $this->appSid = config('app.unifonic.AppSid');
     }
 
+    /*
     public function sendOTPMessage(Beneficiaries $beneficiaries)
     {
         $number = rand(1000 , 9999);
@@ -36,4 +38,30 @@ class SmsService
             'expires_at' => now()->addMinutes(5),
         ]);
     }
+    */
+
+    public function sendOTPMessage(Beneficiaries $beneficiaries)
+    {
+        $number = rand(1000, 9999);
+        // $number = 1111;
+        $url = "$this->apiUrl?AppSid=$this->appSid&Body=Code is : $number&Recipient=$beneficiaries->phone";
+
+        // Log the input data and the generated OTP
+        logger()->info('Sending OTP message to: ' . $beneficiaries->phone);
+        logger()->info('Generated OTP: ' . $number);
+
+        $response = \Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post($url);
+
+        $beneficiaries->sms()->create([
+            'sms' => bcrypt($number),
+            'type' => Sms::OTP,
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        return $number;
+    }
+
+
 }

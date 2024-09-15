@@ -33,10 +33,19 @@ class LoginRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
+
+     /*
     public function rules(): array
     {
         return [
             'phone' => 'required|string|starts_with:+9665|exists:beneficiaries,phone'
+        ];
+    }
+    */
+    public function rules(): array
+    {
+        return [
+            'phone' => 'required|string|exists:beneficiaries,phone'
         ];
     }
 
