@@ -36,7 +36,8 @@ class SmsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|string|starts_with:+9665|exists:beneficiaries,phone',
+            //'phone' => 'required|string|starts_with:+9665|exists:beneficiaries,phone',
+            'phone' => 'required|string|exists:beneficiaries,phone',
             'sms' => 'required|string|min:4|max:4'
         ];
     }
